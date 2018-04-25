@@ -2,11 +2,18 @@ package io.ciborete.model;
 
 import io.ciborete.enums.PostType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
 
+@Document
+@CompoundIndexes({
+        @CompoundIndex(name="rest_user_post",def = "{'restaurantId':1,'userId':1,'postId':1}")
+})
 public class WallPost {
 
     List<String> tags;
@@ -15,7 +22,6 @@ public class WallPost {
 
     boolean brandMention;
 
-    @Indexed
     String restaurantId;
 
     public List<String> getTags() {
@@ -126,10 +132,8 @@ public class WallPost {
 
     Date createdTime;
 
-    @Indexed
     String userId;
 
-    @Indexed
     String postId;
 
     @Id

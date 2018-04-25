@@ -11,7 +11,10 @@ public interface WallPostService {
     void deleteWallPost(String WallPostId);
     void deleteWallPosts(List<String> wallPosts);
     List<WallPost> findWallPosts();
-    List<WallPost> findWallPosts(Request request);
+    List<WallPost> findWallPosts(String userId, String loggedInUser,Request request);
+
+    List<WallPost> findOwnPosts(String loggedInUserId, Request request);
+
     WallPost findWallPost(String wallPostId);
     List<WallPost> findWallPostsByIds(List<String> wallPostIds);
     WallPost updateWallPost(String wallPostId,WallPost wallPost);

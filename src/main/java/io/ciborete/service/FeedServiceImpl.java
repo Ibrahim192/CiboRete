@@ -1,31 +1,76 @@
 package io.ciborete.service;
 
 import io.ciborete.dto.Request;
+import io.ciborete.model.Friends;
 import io.ciborete.model.Review;
 import io.ciborete.model.WallPost;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class FeedServiceImpl implements FeedService {
 
+    @Autowired
+    MongoOperations mongoOperations;
+
     @Override
     public List<WallPost> fetchFeeds(String userId, Request request) {
-        return null;
+        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        if(response==null || response.getFriends().keySet().isEmpty()){
+            return Collections.emptyList();
+        }
+        Query query = new Query(Criteria.where("userId").in(response.getFriends().keySet()));
+        query.with(new PageRequest(request.getPageOffset(),request.getPageLimit()));
+        if(request.getSortKey()==null || request.getSortKey().isEmpty()){
+            request.setSortKey("createdTime");
+        }
+        query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
+        return mongoOperations.find(query,WallPost.class,"wallPost");
     }
 
     @Override
     public List<WallPost> fetchFeeds(String userId) {
-        return null;
+        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        if(response==null || response.getFriends().keySet().isEmpty()){
+            return Collections.emptyList();
+        }
+        return mongoOperations.find(Query.query(Criteria.where("userId").in(response.getFriends().keySet())),WallPost.class,"wallPost");
+
     }
 
     @Override
     public List<Review> fetchReviews(String userId, Request request) {
-        return null;
+        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId))
+                .addCriteria(Criteria.where("anonymous").is(false)),Friends.class,"friends");
+        if(response==null || response.getFriends().keySet().isEmpty()){
+            return Collections.emptyList();
+        }
+        Query query = new Query(Criteria.where("userId").in(response.getFriends().keySet()));
+        query.with(new PageRequest(request.getPageOffset(),request.getPageLimit()));
+        if(request.getSortKey()==null || request.getSortKey().isEmpty()){
+            request.setSortKey("createdTime");
+        }
+        query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
+        return mongoOperations.find(query,Review.class,"review");
     }
 
     @Override
     public List<Review> fetchReviews(String userId) {
-        return null;
+        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId))
+                .addCriteria(Criteria.where("anonymous").is(false)),Friends.class,"friends");
+        if(response==null || response.getFriends().keySet().isEmpty()){
+            return Collections.emptyList();
+        }
+        return mongoOperations.find(Query.query(Criteria.where("userId").in(response.getFriends().keySet())),Review.class,"reviews");
+
     }
 
     @Override

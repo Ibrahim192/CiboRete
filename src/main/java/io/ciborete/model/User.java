@@ -5,18 +5,22 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Document
+@CompoundIndexes({
+        @CompoundIndex(name="displayname_usertype",def="{'displayName':1,'userType':1}")
+})
 public class User {
 
     @Id
     @Indexed
     String userId;
 
-    @Indexed
     String displayName;
 
     String email;
@@ -112,14 +116,12 @@ public class User {
     }
 
 
-    @Indexed
     UserType userType;
 
     Map<String,Object> properties;
 
     String description;
 
-    @Indexed
     Date createdTime;
 
     Date modifiedTime;

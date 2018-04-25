@@ -2,13 +2,16 @@ package io.ciborete.model;
 
 import io.ciborete.enums.Props;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.Map;
 
+@Document
 public class UserPostSettings {
 
-    @Id
+    @Indexed
     String userId;
 
     public String getUserId() {

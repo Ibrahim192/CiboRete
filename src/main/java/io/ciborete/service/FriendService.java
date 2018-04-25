@@ -13,9 +13,8 @@ public interface FriendService {
 
     void confirmFriendRequest(FriendRequestBean requestBean, String requestor);
 
-    void cancelFriendRequest(FriendRequestBean requestBean, String requestor);
+    void updateFriendRequest(FriendRequestBean requestBean, String requestor);
 
-    void holdFriendRequest(FriendRequestBean requestBean, String requestor);
 
     void remove(String userId1, String userId2);
 

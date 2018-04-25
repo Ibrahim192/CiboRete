@@ -14,7 +14,7 @@ public class SpringBootStartup {
     public static void main(String[] args){
 
         SpringApplication.run(SpringBootStartup.class,args);
-        CurrentLoggedInUser.setLoggedInUser("a29f3cd5-0c97-4f81-8f70-02c3e83d6762", UserType.FAN_USER);
+        CurrentLoggedInUser.setLoggedInUser("8955a662-22ec-45ba-a66e-36db7c84aead", UserType.FAN_USER);
     }
 
    /* @Bean

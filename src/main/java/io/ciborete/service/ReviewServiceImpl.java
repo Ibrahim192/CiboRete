@@ -2,6 +2,8 @@ package io.ciborete.service;
 
 import io.ciborete.dto.Request;
 import io.ciborete.exceptions.AssetNotFoundException;
+import io.ciborete.model.Friends;
+import io.ciborete.model.Restaurant;
 import io.ciborete.model.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +22,9 @@ import java.util.UUID;
 public class ReviewServiceImpl implements ReviewService {
     @Autowired
     MongoOperations mongoOperations;
+
+    @Autowired
+    RestaurantService restaurantService;
 
     @Override
     public Review addReview(Review review) {
@@ -46,8 +52,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> findReviews(Request request) {
-        Query query = new Query();
+    public List<Review> findReviews(String userId, String loggedInUserId, Request request) {
+        Friends getFriends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        if(getFriends==null || !getFriends.getFriends().keySet().contains(loggedInUserId)){
+            return Collections.emptyList();
+        }
+        Query query = new Query(Criteria.where("userId").is(userId)).addCriteria(Criteria.where("anonymous").is(false));
         query.with(new PageRequest(request.getPageOffset(),request.getPageLimit()));
         if(request.getSortKey()==null || request.getSortKey().isEmpty()){
             request.setSortKey("createdTime");
@@ -82,5 +92,33 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void deleteReviews(List<String> reviews){
         mongoOperations.remove(Query.query(Criteria.where("reviewId").in(reviews)),Review.class,"review");
+    }
+
+    @Override
+    public List<Review> findOwnReviews(String loggedInUserId, Request request) {
+        Query query = new Query(Criteria.where("userId").is(loggedInUserId));
+        query.with(new PageRequest(request.getPageOffset(),request.getPageLimit()));
+        if(request.getSortKey()==null || request.getSortKey().isEmpty()){
+            request.setSortKey("createdTime");
+        }
+        query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
+        return mongoOperations.find(query,Review.class,"review");
+    }
+
+    @Override
+    public List<Review> fetchMentionedReviews(String userId, Request request) {
+        Query restaurantQuery = new Query(Criteria.where("ownerId").is(userId));
+        Restaurant restaurant = mongoOperations.findOne(restaurantQuery,Restaurant.class,"restaurant");
+        if(restaurant==null){
+            return Collections.emptyList();
+        }
+        Query query = new Query(Criteria.where("restaurantId").is(restaurant.getRestaurantId()));
+        query.with(new PageRequest(request.getPageOffset(),request.getPageLimit()));
+        if(request.getSortKey()==null || request.getSortKey().isEmpty()){
+            request.setSortKey("createdTime");
+        }
+        query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
+        return mongoOperations.find(query,Review.class,"review");
+
     }
 }

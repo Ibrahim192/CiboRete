@@ -21,23 +21,18 @@ public class FriendsController {
     @Autowired
     FriendService friendService;
 
-    @RequestMapping(path="initiate-request",method = RequestMethod.POST)
+    @RequestMapping(path="/initiate-request",method = RequestMethod.POST)
     public void initiateFriendRequest(@RequestBody FriendRequestBean request){
         friendService.initiateFriendshipRequest(request,CurrentLoggedInUser.getCurrentLoggedInUser().getUserId());
     }
 
-    @RequestMapping(path="cancel-request",method = RequestMethod.POST)
-    public void cancelFriendRequest(@RequestBody FriendRequestBean request){
-        friendService.cancelFriendRequest(request,CurrentLoggedInUser.getCurrentLoggedInUser().getUserId());
+    @RequestMapping(path="/update-request/{requestId}",method = RequestMethod.POST)
+    public void updateFriendRequest(@PathVariable String requestId,@RequestBody FriendRequestBean request){
+        friendService.updateFriendRequest(request,CurrentLoggedInUser.getCurrentLoggedInUser().getUserId());
     }
 
-    @RequestMapping(path="hold-request",method = RequestMethod.POST)
-    public void holdFriendRequest(@RequestBody FriendRequestBean request){
-        friendService.holdFriendRequest(request,CurrentLoggedInUser.getCurrentLoggedInUser().getUserId());
-    }
-
-    @RequestMapping(path="confirm-request",method = RequestMethod.POST)
-    public void confirmFriendRequest(@RequestBody FriendRequestBean request){
+    @RequestMapping(path="/confirm-request/{requestId}",method = RequestMethod.POST)
+    public void confirmFriendRequest(@PathVariable String requestId,@RequestBody FriendRequestBean request){
         friendService.confirmFriendRequest(request,CurrentLoggedInUser.getCurrentLoggedInUser().getUserId());
     }
 
@@ -56,7 +51,7 @@ public class FriendsController {
         return friendService.fetchPendingRequests(CurrentLoggedInUser.getCurrentLoggedInUser().getUserId());
     }
 
-    @RequestMapping(path="fetch-friends",method = RequestMethod.GET)
+    @RequestMapping(path="fetch-sent-requests",method = RequestMethod.GET)
     public List<FriendShip> fetchSentRequests(){
         return friendService.fetchSentRequests(CurrentLoggedInUser.getCurrentLoggedInUser().getUserId());
     }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/feed")
+@RequestMapping(path = "/feeds")
 public class FeedController {
 
     @Autowired

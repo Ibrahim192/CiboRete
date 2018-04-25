@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/reply")
+@RequestMapping(path="/replies")
 public class ReplyController {
     @Autowired
     ReplyService replyService;

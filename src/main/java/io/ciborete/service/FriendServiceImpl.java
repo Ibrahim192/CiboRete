@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -30,14 +31,19 @@ public class FriendServiceImpl implements FriendService {
         friendShip.setStatus(FriendShipStatus.INITIATED);
         friendShip.setUserId1(requestor);
         friendShip.setUserId2(requestBean.getUserId());
-        friendShip.setModifiedStatusTime(requestBean.getInitiationTime());
-        mongoOperations.save(friendShip,"friendship");
+        friendShip.setModifiedStatusTime(new Date());
+        try {
+            mongoOperations.save(friendShip, "friendship");
+        }
+        catch(Exception e){
+            throw new RuntimeException("Error with saving record/ might be duplicate request");
+        }
     }
 
     @Override
     public void confirmFriendRequest(FriendRequestBean requestBean, String requestor){
         FriendShip friendShip = mongoOperations.findOne(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class);
-        friendShip.setModifiedStatusTime(requestBean.getInitiationTime());
+        friendShip.setModifiedStatusTime(new Date());
         friendShip.setStatus(FriendShipStatus.CONFIRMED);
         mongoOperations.save(friendShip,"friendship");
         Friends updateForFriend1 = mongoOperations.findOne(Query.query(Criteria.where("userId").is(requestBean.getUserId())),Friends.class,"friends");
@@ -60,22 +66,17 @@ public class FriendServiceImpl implements FriendService {
         }
         mongoOperations.save(updateForFriend1,"friends");
         mongoOperations.save(updateForFriend2,"friends");
-        mongoOperations.remove(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class,"frienship");
+        mongoOperations.remove(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class,"friendship");
     }
 
     @Override
-    public void cancelFriendRequest(FriendRequestBean requestBean, String requestor){
+    public void updateFriendRequest(FriendRequestBean requestBean, String requestor){
         FriendShip friendShip = mongoOperations.findOne(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class);
+        if(requestBean.getStatus()!=FriendShipStatus.INITIATED){
+            throw new RuntimeException("Incorrect Status transition");
+        }
         friendShip.setModifiedStatusTime(requestBean.getInitiationTime());
-        friendShip.setStatus(FriendShipStatus.CANCELLED);
-        mongoOperations.save(friendShip,"friendship");
-    }
-
-    @Override
-    public void holdFriendRequest(FriendRequestBean requestBean, String requestor){
-        FriendShip friendShip = mongoOperations.findOne(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class);
-        friendShip.setModifiedStatusTime(requestBean.getInitiationTime());
-        friendShip.setStatus(FriendShipStatus.HOLD);
+        friendShip.setStatus(requestBean.getStatus());
         mongoOperations.save(friendShip,"friendship");
     }
 

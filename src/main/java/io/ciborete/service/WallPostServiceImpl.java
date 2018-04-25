@@ -2,6 +2,7 @@ package io.ciborete.service;
 
 import io.ciborete.dto.Request;
 import io.ciborete.exceptions.AssetNotFoundException;
+import io.ciborete.model.Friends;
 import io.ciborete.model.WallPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -46,8 +48,12 @@ public class WallPostServiceImpl implements WallPostService {
     }
 
     @Override
-    public List<WallPost> findWallPosts(Request request) {
-        Query query = new Query();
+    public List<WallPost> findWallPosts(String userId, String loggedInUserId,Request request) {
+        Friends getFriends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        if(getFriends==null || !getFriends.getFriends().keySet().contains(loggedInUserId)){
+            return Collections.emptyList();
+        }
+        Query query = new Query(Criteria.where("userId").is(userId));
         query.with(new PageRequest(request.getPageOffset(),request.getPageLimit()));
         if(request.getSortKey()==null || request.getSortKey().isEmpty()){
             request.setSortKey("createdTime");
@@ -55,6 +61,19 @@ public class WallPostServiceImpl implements WallPostService {
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
         return mongoOperations.find(query,WallPost.class,"wallPost");
     }
+
+    @Override
+    public List<WallPost> findOwnPosts( String loggedInUserId,Request request) {
+        Query query = new Query(Criteria.where("userId").is(loggedInUserId));
+        query.with(new PageRequest(request.getPageOffset(),request.getPageLimit()));
+        if(request.getSortKey()==null || request.getSortKey().isEmpty()){
+            request.setSortKey("createdTime");
+        }
+        query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
+        return mongoOperations.find(query,WallPost.class,"wallPost");
+    }
+
+
 
     @Override
     public WallPost findWallPost(String wallPostId) {
