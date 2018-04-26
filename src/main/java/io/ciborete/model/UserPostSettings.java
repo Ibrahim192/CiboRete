@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.Map;
 
-@Document
+@Document(collection = "userpostsettings")
 public class UserPostSettings {
 
     @Indexed

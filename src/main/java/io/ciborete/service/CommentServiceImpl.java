@@ -27,13 +27,13 @@ public class CommentServiceImpl implements CommentService {
         comment.setCommentId(UUID.randomUUID().toString());
         comment.setCreatedTime(new Date());
         comment.setModifiedTime(new Date());
-        mongoOperations.save(comment,"comment");
+        mongoOperations.save(comment,"comments");
         return comment;
     }
 
     @Override
     public void deleteComment(String commentId) {
-        Comment comment = mongoOperations.findById(commentId,Comment.class,"comment");
+        Comment comment = mongoOperations.findById(commentId,Comment.class,"comments");
         if(comment!=null){
             mongoOperations.remove(new Query(Criteria.where("commentId").is(commentId)));
         }
@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> findComments() {
-        return mongoOperations.findAll(Comment.class,"comment");
+        return mongoOperations.findAll(Comment.class,"comments");
     }
 
     @Override
@@ -53,31 +53,31 @@ public class CommentServiceImpl implements CommentService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Comment.class,"comment");
+        return mongoOperations.find(query,Comment.class,"comments");
     }
 
     @Override
     public Comment findComment(String commentId) {
-        return mongoOperations.findById(commentId,Comment.class,"comment");
+        return mongoOperations.findById(commentId,Comment.class,"comments");
     }
 
     @Override
     public List<Comment> findCommentsByIds(List<String> commentIds) {
-        return mongoOperations.find(Query.query(Criteria.where("commentId").in(commentIds)),Comment.class,"comment");
+        return mongoOperations.find(Query.query(Criteria.where("commentId").in(commentIds)),Comment.class,"comments");
     }
 
     @Override
     public Comment updateComment(String wallPostId, Comment comment) {
-        Comment currentComment = mongoOperations.findById(comment.getCommentId(),Comment.class,"comment");
+        Comment currentComment = mongoOperations.findById(comment.getCommentId(),Comment.class,"comments");
         if(currentComment!=null){
             comment.setModifiedTime(new Date());
-            mongoOperations.save(comment,"comment");
+            mongoOperations.save(comment,"comments");
         }
         throw new AssetNotFoundException("Comment not found with comment Id "+comment.getCommentId());
     }
 
     @Override
     public void deleteComments(List<String> comments){
-        mongoOperations.remove(Query.query(Criteria.where("commentId").in(comments)),Comment.class,"comment");
+        mongoOperations.remove(Query.query(Criteria.where("commentId").in(comments)),Comment.class,"comments");
     }
 }

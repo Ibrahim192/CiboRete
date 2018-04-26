@@ -31,13 +31,13 @@ public class ReviewServiceImpl implements ReviewService {
         review.setReviewId(UUID.randomUUID().toString());
         review.setCreatedTime(new Date());
         review.setModifiedTime(new Date());
-        mongoOperations.save(review,"review");
+        mongoOperations.save(review);
         return review;
     }
 
     @Override
     public void deleteReview(String reviewId) {
-        Review review = mongoOperations.findById(reviewId,Review.class,"review");
+        Review review = mongoOperations.findById(reviewId,Review.class);
         if(review!=null){
             mongoOperations.remove(new Query(Criteria.where("reviewId").is(reviewId)));
         }
@@ -48,12 +48,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<Review> findReviews() {
-        return mongoOperations.findAll(Review.class,"review");
+        return mongoOperations.findAll(Review.class);
     }
 
     @Override
     public List<Review> findReviews(String userId, String loggedInUserId, Request request) {
-        Friends getFriends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        Friends getFriends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class);
         if(getFriends==null || !getFriends.getFriends().keySet().contains(loggedInUserId)){
             return Collections.emptyList();
         }
@@ -63,25 +63,25 @@ public class ReviewServiceImpl implements ReviewService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Review.class,"review");
+        return mongoOperations.find(query,Review.class);
     }
 
     @Override
     public Review findReview(String reviewId) {
-        return mongoOperations.findById(reviewId,Review.class,"review");
+        return mongoOperations.findById(reviewId,Review.class);
     }
 
     @Override
     public List<Review> findReviewsByIds(List<String> reviewIds) {
-        return mongoOperations.find(Query.query(Criteria.where("reviewId").in(reviewIds)),Review.class,"review");
+        return mongoOperations.find(Query.query(Criteria.where("reviewId").in(reviewIds)),Review.class);
     }
 
     @Override
     public Review updateReview(String wallReviewId, Review review) {
-        Review currentReview = mongoOperations.findById(review.getReviewId(),Review.class,"review");
+        Review currentReview = mongoOperations.findById(review.getReviewId(),Review.class);
         if(currentReview!=null){
             review.setModifiedTime(new Date());
-            mongoOperations.save(review,"review");
+            mongoOperations.save(review);
         }
         else {
             throw new AssetNotFoundException("Review not found with review Id " + review.getReviewId());
@@ -91,7 +91,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void deleteReviews(List<String> reviews){
-        mongoOperations.remove(Query.query(Criteria.where("reviewId").in(reviews)),Review.class,"review");
+        mongoOperations.remove(Query.query(Criteria.where("reviewId").in(reviews)),Review.class);
     }
 
     @Override
@@ -102,13 +102,13 @@ public class ReviewServiceImpl implements ReviewService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Review.class,"review");
+        return mongoOperations.find(query,Review.class);
     }
 
     @Override
     public List<Review> fetchMentionedReviews(String userId, Request request) {
         Query restaurantQuery = new Query(Criteria.where("ownerId").is(userId));
-        Restaurant restaurant = mongoOperations.findOne(restaurantQuery,Restaurant.class,"restaurant");
+        Restaurant restaurant = mongoOperations.findOne(restaurantQuery,Restaurant.class);
         if(restaurant==null){
             return Collections.emptyList();
         }
@@ -118,7 +118,7 @@ public class ReviewServiceImpl implements ReviewService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Review.class,"review");
+        return mongoOperations.find(query,Review.class);
 
     }
 }

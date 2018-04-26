@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Document
+@Document(collection = "posts")
 @CompoundIndexes({
         @CompoundIndex(name="user_restaurant",def="{'userId':1,'restaurantId':1}")
 })

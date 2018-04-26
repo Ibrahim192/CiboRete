@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 import java.util.Date;
 
-@Document
+@Document(collection = "reviews")
 @CompoundIndexes({
         @CompoundIndex(name="rest_user_post",def="{'restaurantId':1,'postId':1,'userId':1}")
 })

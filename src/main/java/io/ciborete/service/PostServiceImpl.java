@@ -26,13 +26,13 @@ public class PostServiceImpl implements  PostService {
         post.setPostId(UUID.randomUUID().toString());
         post.setCreatedTime(new Date());
         post.setModifiedTime(new Date());
-        mongoOperations.save(post,"post");
+        mongoOperations.save(post);
         return post;
     }
 
     @Override
     public void deletePost(String postId) {
-        Post post = mongoOperations.findById(postId,Post.class,"post");
+        Post post = mongoOperations.findById(postId,Post.class);
         if(post!=null){
             mongoOperations.remove(new Query(Criteria.where("postId").is(postId)));
         }
@@ -41,7 +41,7 @@ public class PostServiceImpl implements  PostService {
 
     @Override
     public List<Post> findPosts() {
-        return mongoOperations.findAll(Post.class,"post");
+        return mongoOperations.findAll(Post.class);
     }
 
     @Override
@@ -52,31 +52,31 @@ public class PostServiceImpl implements  PostService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Post.class,"post");
+        return mongoOperations.find(query,Post.class);
     }
 
     @Override
     public Post findPost(String postId) {
-        return mongoOperations.findById(postId,Post.class,"post");
+        return mongoOperations.findById(postId,Post.class);
     }
 
     @Override
     public List<Post> findPostsByIds(List<String> postIds) {
-        return mongoOperations.find(Query.query(Criteria.where("postId").in(postIds)),Post.class,"post");
+        return mongoOperations.find(Query.query(Criteria.where("postId").in(postIds)),Post.class);
     }
 
     @Override
     public Post updatePost(String wallPostId, Post post) {
-        Post currentPost = mongoOperations.findById(post.getPostId(),Post.class,"post");
+        Post currentPost = mongoOperations.findById(post.getPostId(),Post.class);
         if(currentPost!=null){
             post.setModifiedTime(new Date());
-            mongoOperations.save(post,"post");
+            mongoOperations.save(post);
         }
         throw new AssetNotFoundException("Post not found with post Id "+post);
     }
 
     @Override
     public void deletePosts(List<String> posts){
-        mongoOperations.remove(Query.query(Criteria.where("postId").in(posts)),Post.class,"post");
+        mongoOperations.remove(Query.query(Criteria.where("postId").in(posts)),Post.class);
     }
 }

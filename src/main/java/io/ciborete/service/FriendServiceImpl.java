@@ -45,9 +45,9 @@ public class FriendServiceImpl implements FriendService {
         FriendShip friendShip = mongoOperations.findOne(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class);
         friendShip.setModifiedStatusTime(new Date());
         friendShip.setStatus(FriendShipStatus.CONFIRMED);
-        mongoOperations.save(friendShip,"friendship");
-        Friends updateForFriend1 = mongoOperations.findOne(Query.query(Criteria.where("userId").is(requestBean.getUserId())),Friends.class,"friends");
-        Friends updateForFriend2 = mongoOperations.findOne(Query.query(Criteria.where("userId").is(requestor)),Friends.class,"friends");
+        mongoOperations.save(friendShip);
+        Friends updateForFriend1 = mongoOperations.findOne(Query.query(Criteria.where("userId").is(requestBean.getUserId())),Friends.class);
+        Friends updateForFriend2 = mongoOperations.findOne(Query.query(Criteria.where("userId").is(requestor)),Friends.class);
         if(updateForFriend1!=null){
             updateForFriend1.getFriends().put(requestor,new Date());
         }
@@ -64,9 +64,9 @@ public class FriendServiceImpl implements FriendService {
             updateForFriend2.setUserId(requestor);
             updateForFriend2.setFriends(Map.of(requestBean.getUserId(),new Date()));
         }
-        mongoOperations.save(updateForFriend1,"friends");
-        mongoOperations.save(updateForFriend2,"friends");
-        mongoOperations.remove(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class,"friendship");
+        mongoOperations.save(updateForFriend1);
+        mongoOperations.save(updateForFriend2);
+        mongoOperations.remove(new Query(Criteria.where("userId1").is(requestBean.getUserId())).addCriteria(Criteria.where("userId2").is(requestor)),FriendShip.class);
     }
 
     @Override
@@ -77,40 +77,40 @@ public class FriendServiceImpl implements FriendService {
         }
         friendShip.setModifiedStatusTime(requestBean.getInitiationTime());
         friendShip.setStatus(requestBean.getStatus());
-        mongoOperations.save(friendShip,"friendship");
+        mongoOperations.save(friendShip);
     }
 
     @Override
     public void remove(String userId1, String userId2){
         Friends user1Friends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId1)),Friends.class);
         user1Friends.getFriends().remove(userId2);
-        mongoOperations.save(user1Friends,"friends");
+        mongoOperations.save(user1Friends);
         Friends user2Friends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId2)),Friends.class);
         user2Friends.getFriends().remove(userId2);
-        mongoOperations.save(user2Friends,"friends");
+        mongoOperations.save(user2Friends);
     }
 
     @Override
     public Map<String,Date> fetchFriends(String userId){
-        Friends friends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        Friends friends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class);
         return friends.getFriends();
     }
 
     @Override
     public Map<String,Date> fetchFriends(String userId, int page, int offset){
-        Friends friends = mongoOperations.findOne(new Query(Criteria.where("userId").is(userId)).with(new PageRequest(page,offset)),Friends.class,"friends");
+        Friends friends = mongoOperations.findOne(new Query(Criteria.where("userId").is(userId)).with(new PageRequest(page,offset)),Friends.class);
         return friends.getFriends();
     }
 
     @Override
     public List<FriendShip> fetchPendingRequests(String userId){
-        List<FriendShip> friends = mongoOperations.find(new Query(Criteria.where("userId2").is(userId)).addCriteria(Criteria.where("status").in(Arrays.asList(FriendShipStatus.HOLD.name(),FriendShipStatus.INITIATED.name()))),FriendShip.class,"friendship");
+        List<FriendShip> friends = mongoOperations.find(new Query(Criteria.where("userId2").is(userId)).addCriteria(Criteria.where("status").in(Arrays.asList(FriendShipStatus.HOLD.name(),FriendShipStatus.INITIATED.name()))),FriendShip.class);
         return friends;
     }
 
     @Override
     public List<FriendShip> fetchSentRequests(String userId){
-        List<FriendShip> friends = mongoOperations.find(new Query(Criteria.where("userId1").is(userId)).addCriteria(Criteria.where("status").in(Arrays.asList(FriendShipStatus.HOLD.name(),FriendShipStatus.INITIATED.name()))),FriendShip.class,"friendship");
+        List<FriendShip> friends = mongoOperations.find(new Query(Criteria.where("userId1").is(userId)).addCriteria(Criteria.where("status").in(Arrays.asList(FriendShipStatus.HOLD.name(),FriendShipStatus.INITIATED.name()))),FriendShip.class);
         return friends;
     }
 

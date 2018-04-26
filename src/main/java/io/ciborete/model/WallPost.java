@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 
-@Document
+@Document(collection = "wallposts")
 @CompoundIndexes({
         @CompoundIndex(name="rest_user_post",def = "{'restaurantId':1,'userId':1,'postId':1}")
 })

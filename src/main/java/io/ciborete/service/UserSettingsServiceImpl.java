@@ -20,15 +20,15 @@ public class UserSettingsServiceImpl implements UserSettingsService {
     @Override
     public UserSettings addUserSettings(UserSettings userSettings) {
         userSettings.setModifiedTime(new Date());
-        mongoOperations.save(userSettings,"userSettings");
+        mongoOperations.save(userSettings);
         return userSettings;
     }
 
     @Override
     public void deleteUserSettings(String userId) {
-        UserSettings userSettings = mongoOperations.findById(userId,UserSettings.class,"userSettings");
+        UserSettings userSettings = mongoOperations.findById(userId,UserSettings.class);
         if(userSettings!=null){
-            mongoOperations.remove(Query.query(Criteria.where("userId").is(userId)),UserSettings.class,"userSettings");
+            mongoOperations.remove(Query.query(Criteria.where("userId").is(userId)),UserSettings.class);
         }
         else {
             throw new AssetNotFoundException("User not found with user Id "+userId);
@@ -38,15 +38,15 @@ public class UserSettingsServiceImpl implements UserSettingsService {
     @Override
     public UserSettings findCurrentUserSettings( ) {
         String userId= CurrentLoggedInUser.getCurrentLoggedInUser().getUserId();
-        return mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),UserSettings.class,"userSettings");
+        return mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),UserSettings.class);
     }
 
     @Override
     public UserSettings updateUserSettings(String userId, UserSettings userSettings) {
-        UserSettings currentUserSettings = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),UserSettings.class,"userSettings");
+        UserSettings currentUserSettings = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),UserSettings.class);
         if(currentUserSettings!=null){
             userSettings.setModifiedTime(new Date());
-            mongoOperations.save(userSettings,"userSettings");
+            mongoOperations.save(userSettings);
         }
         else {
             throw new AssetNotFoundException("User Settings not found with user Id " + userId);

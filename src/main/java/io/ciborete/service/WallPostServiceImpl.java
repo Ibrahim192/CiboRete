@@ -27,13 +27,13 @@ public class WallPostServiceImpl implements WallPostService {
         wallPost.setWallPostId(UUID.randomUUID().toString());
         wallPost.setCreatedTime(new Date());
         wallPost.setModifiedTime(new Date());
-        mongoOperations.save(wallPost,"wallPost");
+        mongoOperations.save(wallPost);
         return wallPost;
     }
 
     @Override
     public void deleteWallPost(String wallPostId) {
-        WallPost wallPost = mongoOperations.findById(wallPostId,WallPost.class,"wallPost");
+        WallPost wallPost = mongoOperations.findById(wallPostId,WallPost.class,"wallposts");
         if(wallPost!=null){
             mongoOperations.remove(new Query(Criteria.where("wallPostId").is(wallPostId)));
         }
@@ -44,12 +44,12 @@ public class WallPostServiceImpl implements WallPostService {
 
     @Override
     public List<WallPost> findWallPosts() {
-        return mongoOperations.findAll(WallPost.class,"wallPost");
+        return mongoOperations.findAll(WallPost.class);
     }
 
     @Override
     public List<WallPost> findWallPosts(String userId, String loggedInUserId,Request request) {
-        Friends getFriends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        Friends getFriends = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class);
         if(getFriends==null || !getFriends.getFriends().keySet().contains(loggedInUserId)){
             return Collections.emptyList();
         }
@@ -59,7 +59,7 @@ public class WallPostServiceImpl implements WallPostService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,WallPost.class,"wallPost");
+        return mongoOperations.find(query,WallPost.class);
     }
 
     @Override
@@ -70,27 +70,27 @@ public class WallPostServiceImpl implements WallPostService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,WallPost.class,"wallPost");
+        return mongoOperations.find(query,WallPost.class);
     }
 
 
 
     @Override
     public WallPost findWallPost(String wallPostId) {
-        return mongoOperations.findById(wallPostId,WallPost.class,"wallPost");
+        return mongoOperations.findById(wallPostId,WallPost.class);
     }
 
     @Override
     public List<WallPost> findWallPostsByIds(List<String> wallPostIds) {
-        return mongoOperations.find(Query.query(Criteria.where("wallPostId").in(wallPostIds)),WallPost.class,"wallPost");
+        return mongoOperations.find(Query.query(Criteria.where("wallPostId").in(wallPostIds)),WallPost.class);
     }
 
     @Override
     public WallPost updateWallPost(String wallPostId, WallPost wallPost) {
-        WallPost currentWallPost = mongoOperations.findById(wallPost.getWallPostId(),WallPost.class,"wallPost");
+        WallPost currentWallPost = mongoOperations.findById(wallPost.getWallPostId(),WallPost.class);
         if(currentWallPost!=null){
             wallPost.setModifiedTime(new Date());
-            mongoOperations.save(wallPost,"wallPost");
+            mongoOperations.save(wallPost);
         }
         else {
             throw new AssetNotFoundException("WallPost not found with wallPost Id " + wallPostId);
@@ -100,6 +100,6 @@ public class WallPostServiceImpl implements WallPostService {
 
     @Override
     public void deleteWallPosts(List<String> wallPosts){
-        mongoOperations.remove(Query.query(Criteria.where("wallPostId").in(wallPosts)),WallPost.class,"wallPost");
+        mongoOperations.remove(Query.query(Criteria.where("wallPostId").in(wallPosts)),WallPost.class);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 
-@Document
+@Document(collection = "item")
 public class Item {
 
     List<String> tags;

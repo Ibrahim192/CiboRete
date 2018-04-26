@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Document
+@Document(collection = "friends")
 public class Friends {
 
     @Indexed

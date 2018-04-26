@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Document
+@Document(collection = "users")
 @CompoundIndexes({
         @CompoundIndex(name="displayname_usertype",def="{'displayName':1,'userType':1}")
 })

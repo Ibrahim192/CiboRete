@@ -26,13 +26,13 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setRestaurantId(UUID.randomUUID().toString());
         restaurant.setCreatedTime(new Date());
         restaurant.setModifiedTime(new Date());
-        mongoOperations.save(restaurant,"restaurant");
+        mongoOperations.save(restaurant);
         return restaurant;
     }
 
     @Override
     public void deleteRestaurant(String restaurantId) {
-        Restaurant restaurant = mongoOperations.findById(restaurantId,Restaurant.class,"restaurant");
+        Restaurant restaurant = mongoOperations.findById(restaurantId,Restaurant.class);
         if(restaurant!=null){
             mongoOperations.remove(new Query(Criteria.where("restaurantId").is(restaurantId)));
         }
@@ -41,7 +41,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<Restaurant> findRestaurants() {
-        return mongoOperations.findAll(Restaurant.class,"restaurant");
+        return mongoOperations.findAll(Restaurant.class);
     }
 
     @Override
@@ -52,31 +52,31 @@ public class RestaurantServiceImpl implements RestaurantService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Restaurant.class,"restaurant");
+        return mongoOperations.find(query,Restaurant.class);
     }
 
     @Override
     public Restaurant findRestaurant(String restaurantId) {
-        return mongoOperations.findById(restaurantId,Restaurant.class,"restaurant");
+        return mongoOperations.findById(restaurantId,Restaurant.class);
     }
 
     @Override
     public List<Restaurant> findRestaurantsByIds(List<String> restaurantIds) {
-        return mongoOperations.find(Query.query(Criteria.where("restaurantId").in(restaurantIds)),Restaurant.class,"restaurant");
+        return mongoOperations.find(Query.query(Criteria.where("restaurantId").in(restaurantIds)),Restaurant.class);
     }
 
     @Override
     public Restaurant updateRestaurant(String wallRestaurantId, Restaurant restaurant) {
-        Restaurant currentRestaurant = mongoOperations.findById(restaurant.getRestaurantId(),Restaurant.class,"restaurant");
+        Restaurant currentRestaurant = mongoOperations.findById(restaurant.getRestaurantId(),Restaurant.class);
         if(currentRestaurant!=null){
             restaurant.setModifiedTime(new Date());
-            mongoOperations.save(restaurant,"restaurant");
+            mongoOperations.save(restaurant);
         }
         throw new AssetNotFoundException("Restaurant not found with restaurant Id "+restaurant.getRestaurantId());
     }
 
     @Override
     public void deleteRestaurants(List<String> restaurants){
-        mongoOperations.remove(Query.query(Criteria.where("restaurantId").in(restaurants)),Restaurant.class,"restaurant");
+        mongoOperations.remove(Query.query(Criteria.where("restaurantId").in(restaurants)),Restaurant.class);
     }
 }

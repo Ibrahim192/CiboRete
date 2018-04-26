@@ -25,15 +25,15 @@ public class UserServiceImpl implements UserService{
         user.setUserId(UUID.randomUUID().toString());
         user.setCreatedTime(new Date());
         user.setModifiedTime(new Date());
-        mongoOperations.save(user,"user");
+        mongoOperations.save(user);
         return user;
     }
 
     @Override
     public void deleteUser(String userId) throws AssetNotFoundException {
-        User user = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),User.class,"user");
+        User user = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),User.class);
         if(user!=null){
-            mongoOperations.remove(Query.query(Criteria.where("userId").is(userId)),User.class,"user");
+            mongoOperations.remove(Query.query(Criteria.where("userId").is(userId)),User.class);
         }
         else {
             throw new AssetNotFoundException("User not found with user Id "+userId);
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> findUsers() {
-        return mongoOperations.findAll(User.class,"user");
+        return mongoOperations.findAll(User.class);
     }
 
     @Override
@@ -58,26 +58,26 @@ public class UserServiceImpl implements UserService{
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,User.class,"user");
+        return mongoOperations.find(query,User.class);
     }
 
     @Override
     public User findUser(String userId) {
-        return mongoOperations.findById(userId,User.class,"user");
+        return mongoOperations.findById(userId,User.class);
     }
 
     @Override
     public List<User> findUsersByIds(List<String> userIds) {
-        return mongoOperations.find(Query.query(Criteria.where("userId").in(userIds)),User.class,"user");
+        return mongoOperations.find(Query.query(Criteria.where("userId").in(userIds)),User.class);
 
     }
 
     @Override
     public User updateUser(String userId, User user) throws AssetNotFoundException {
-        User currentUser = mongoOperations.findById(user.getUserId(),User.class,"user");
+        User currentUser = mongoOperations.findById(user.getUserId(),User.class);
         if(currentUser!=null){
             user.setModifiedTime(new Date());
-            mongoOperations.save(user,"user");
+            mongoOperations.save(user);
         }
         throw new AssetNotFoundException("User not found with user Id "+userId);
     }

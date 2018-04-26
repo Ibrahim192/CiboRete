@@ -23,7 +23,7 @@ public class FeedServiceImpl implements FeedService {
 
     @Override
     public List<WallPost> fetchFeeds(String userId, Request request) {
-        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class);
         if(response==null || response.getFriends().keySet().isEmpty()){
             return Collections.emptyList();
         }
@@ -33,23 +33,23 @@ public class FeedServiceImpl implements FeedService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,WallPost.class,"wallPost");
+        return mongoOperations.find(query,WallPost.class);
     }
 
     @Override
     public List<WallPost> fetchFeeds(String userId) {
-        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class,"friends");
+        Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId)),Friends.class);
         if(response==null || response.getFriends().keySet().isEmpty()){
             return Collections.emptyList();
         }
-        return mongoOperations.find(Query.query(Criteria.where("userId").in(response.getFriends().keySet())),WallPost.class,"wallPost");
+        return mongoOperations.find(Query.query(Criteria.where("userId").in(response.getFriends().keySet())),WallPost.class);
 
     }
 
     @Override
     public List<Review> fetchReviews(String userId, Request request) {
         Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId))
-                .addCriteria(Criteria.where("anonymous").is(false)),Friends.class,"friends");
+                .addCriteria(Criteria.where("anonymous").is(false)),Friends.class);
         if(response==null || response.getFriends().keySet().isEmpty()){
             return Collections.emptyList();
         }
@@ -59,17 +59,17 @@ public class FeedServiceImpl implements FeedService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Review.class,"review");
+        return mongoOperations.find(query,Review.class);
     }
 
     @Override
     public List<Review> fetchReviews(String userId) {
         Friends response = mongoOperations.findOne(Query.query(Criteria.where("userId").is(userId))
-                .addCriteria(Criteria.where("anonymous").is(false)),Friends.class,"friends");
+                .addCriteria(Criteria.where("anonymous").is(false)),Friends.class);
         if(response==null || response.getFriends().keySet().isEmpty()){
             return Collections.emptyList();
         }
-        return mongoOperations.find(Query.query(Criteria.where("userId").in(response.getFriends().keySet())),Review.class,"reviews");
+        return mongoOperations.find(Query.query(Criteria.where("userId").in(response.getFriends().keySet())),Review.class);
 
     }
 

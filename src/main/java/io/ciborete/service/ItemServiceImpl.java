@@ -27,15 +27,15 @@ public class ItemServiceImpl implements ItemService {
         item.setItemId(UUID.randomUUID().toString());
         item.setCreatedTime(new Date());
         item.setModifiedTime(new Date());
-        mongoOperations.save(item,"item");
+        mongoOperations.save(item);
         return item;
     }
 
     @Override
     public void deleteItem(String itemId) {
-        Item item = mongoOperations.findById(itemId,Item.class,"item");
+        Item item = mongoOperations.findById(itemId,Item.class);
         if(item!=null){
-            mongoOperations.remove(Query.query(Criteria.where("itemId").is(itemId)),Item.class,"item");
+            mongoOperations.remove(Query.query(Criteria.where("itemId").is(itemId)),Item.class);
         }
         else {
             throw new AssetNotFoundException("Item not found with item Id "+itemId);
@@ -49,7 +49,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> findItems() {
-        return mongoOperations.findAll(Item.class,"item");
+        return mongoOperations.findAll(Item.class);
     }
 
     @Override
@@ -60,26 +60,26 @@ public class ItemServiceImpl implements ItemService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Item.class,"item");
+        return mongoOperations.find(query,Item.class);
     }
 
     @Override
     public Item findItem(String itemId) {
-        return mongoOperations.findById(itemId,Item.class,"item");
+        return mongoOperations.findById(itemId,Item.class);
     }
 
     @Override
     public List<Item> findItemsByIds(List<String> itemIds) {
-        return mongoOperations.find(Query.query(Criteria.where("itemId").in(itemIds)),Item.class,"item");
+        return mongoOperations.find(Query.query(Criteria.where("itemId").in(itemIds)),Item.class);
 
     }
 
     @Override
     public Item updateItem(String itemId, Item item) {
-        Item currentItem = mongoOperations.findById(itemId,Item.class,"item");
+        Item currentItem = mongoOperations.findById(itemId,Item.class);
         if(currentItem!=null){
             item.setModifiedTime(new Date());
-            mongoOperations.save(item,"item");
+            mongoOperations.save(item);
         }
         else {
             throw new AssetNotFoundException("Item not found with item Id " + itemId);

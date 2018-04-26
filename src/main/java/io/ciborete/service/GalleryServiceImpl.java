@@ -25,13 +25,13 @@ public class GalleryServiceImpl implements GalleryService {
         gallery.setGalleryId(UUID.randomUUID().toString());
         gallery.setCreatedTime(new Date());
         gallery.setModifiedTime(new Date());
-        mongoOperations.save(gallery,"gallery");
+        mongoOperations.save(gallery);
         return gallery;
     }
 
     @Override
     public void deleteGallery(String galleryId) {
-        Gallery gallery = mongoOperations.findById(galleryId,Gallery.class,"gallery");
+        Gallery gallery = mongoOperations.findById(galleryId,Gallery.class);
         if(gallery!=null){
             mongoOperations.remove(new Query(Criteria.where("galleryId").is(galleryId)));
         }
@@ -46,7 +46,7 @@ public class GalleryServiceImpl implements GalleryService {
 
     @Override
     public List<Gallery> findGalleries() {
-        return mongoOperations.findAll(Gallery.class,"gallery");
+        return mongoOperations.findAll(Gallery.class);
     }
 
     @Override
@@ -57,25 +57,25 @@ public class GalleryServiceImpl implements GalleryService {
             request.setSortKey("createdTime");
         }
         query.with(new Sort(new Sort.Order(Sort.Direction.valueOf(request.getSortOrder().name()),request.getSortKey())));
-        return mongoOperations.find(query,Gallery.class,"gallery");
+        return mongoOperations.find(query,Gallery.class);
     }
 
     @Override
     public Gallery findGallery(String galleryId) {
-        return mongoOperations.findById(galleryId,Gallery.class,"gallery");
+        return mongoOperations.findById(galleryId,Gallery.class);
     }
 
     @Override
     public List<Gallery> findGalleriesByIds(List<String> galleryIds) {
-        return mongoOperations.find(Query.query(Criteria.where("galleryId").in(galleryIds)),Gallery.class,"gallery");
+        return mongoOperations.find(Query.query(Criteria.where("galleryId").in(galleryIds)),Gallery.class);
     }
 
     @Override
     public Gallery updateGallery(String wallPostId, Gallery gallery) {
-        Gallery currentGallery = mongoOperations.findById(gallery.getGalleryId(),Gallery.class,"gallery");
+        Gallery currentGallery = mongoOperations.findById(gallery.getGalleryId(),Gallery.class);
         if(currentGallery!=null){
             gallery.setModifiedTime(new Date());
-            mongoOperations.save(gallery,"gallery");
+            mongoOperations.save(gallery);
         }
         else {
             throw new AssetNotFoundException("Gallery not found with gallery Id " + gallery.getGalleryId());

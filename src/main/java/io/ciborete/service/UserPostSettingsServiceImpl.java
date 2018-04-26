@@ -25,15 +25,15 @@ public class UserPostSettingsServiceImpl implements UserPostSettingsService {
     @Override
     public UserPostSettings addUserPostSettings(UserPostSettings userPostSettings) {
         userPostSettings.setModifiedTime(new Date());
-        mongoOperations.save(userPostSettings,"userPostSettings");
+        mongoOperations.save(userPostSettings);
         return userPostSettings;
     }
 
     @Override
     public void deleteUserPostSettings(String userId) {
-        UserPostSettings userPostSettings = mongoOperations.findById(userId,UserPostSettings.class,"userPostSettings");
+        UserPostSettings userPostSettings = mongoOperations.findById(userId,UserPostSettings.class);
         if(userPostSettings!=null){
-            mongoOperations.remove(Query.query(Criteria.where("userId").is(userId)),UserPostSettings.class,"userPostSettings");
+            mongoOperations.remove(Query.query(Criteria.where("userId").is(userId)),UserPostSettings.class);
         }
         else {
             throw new AssetNotFoundException("User not found with user Id "+userId);
@@ -45,16 +45,16 @@ public class UserPostSettingsServiceImpl implements UserPostSettingsService {
 
     @Override
     public UserPostSettings findUserPostSettings(String userId) {
-        return mongoOperations.findById(userId,UserPostSettings.class,"userPostSettings");
+        return mongoOperations.findById(userId,UserPostSettings.class);
     }
 
 
     @Override
     public UserPostSettings updateUserPostSettings(String userId, UserPostSettings userPostSettings) {
-        UserPostSettings currentUserPostSettings = mongoOperations.findById(userPostSettings.getUserId(),UserPostSettings.class,"userPostSettings");
+        UserPostSettings currentUserPostSettings = mongoOperations.findById(userPostSettings.getUserId(),UserPostSettings.class);
         if(currentUserPostSettings!=null){
             userPostSettings.setModifiedTime(new Date());
-            mongoOperations.save(userPostSettings,"userPostSettings");
+            mongoOperations.save(userPostSettings);
         }
         throw new AssetNotFoundException("User Post Settings not found with user Id "+userId);
     }
