@@ -1,17 +1,21 @@
 package io.ciborete.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @Document
+@CompoundIndexes({
+        @CompoundIndex(name="comment_user",def = "{'commentId':1,'userId':1}")
+})
 public class Reply {
 
-    @Id
     String commentId;
 
-    @Id
     String userId;
 
     public String getCommentId() {
@@ -83,6 +87,7 @@ public class Reply {
     long upvote;
 
     @Id
+    @Indexed
     String replyId;
 
     Date createdTime;

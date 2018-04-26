@@ -1,14 +1,20 @@
 package io.ciborete.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document
+@Document(collection="comments")
+@CompoundIndexes({
+        @CompoundIndex(name="post_user",def = "{'postId':1,'userId':1}")
+})
 public class Comment {
 
-    @Id
+
     String postId;
 
     String content;
@@ -48,6 +54,7 @@ public class Comment {
     long upvote;
 
     @Id
+    @Indexed
     String commentId;
 
     public String getPostId() {
@@ -82,10 +89,8 @@ public class Comment {
         this.deleted = deleted;
     }
 
-    @Id
     String userId;
 
-    @Id
     Date createdTime;
 
     Date modifiedTime;
